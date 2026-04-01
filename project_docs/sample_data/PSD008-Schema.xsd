@@ -1,0 +1,991 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+**********************************************************************************************
+*                                                                 
+*    Schema for: Data Item - PSD008 Product Sales Data - Credit Agreement Sales                 
+*                                                                 
+*    Version:    	1.1
+*    Date:       	10 March 2025
+*                                                          
+*    History:    	Version 1.1 Amended the following XML element names:
+*					- 'LendngType' to 'LendingType'
+*					- 'RunningAccounttUsage' to 'RunningAccountUsage'
+*  
+*					Version 1.0 First Published Version
+*   
+**********************************************************************************************
+-->
+<xs:schema
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified"
+	
+	targetNamespace=	"urn:fsa-gov-uk:MER:PSD008:1"
+	xmlns=          	"urn:fsa-gov-uk:MER:PSD008:1"
+	xmlns:mer-meta= 	"urn:fsa-gov-uk:MER:Meta-Data:1"
+	
+	version="1"
+	id="MER-PSD008">
+
+	<xs:annotation>
+		<xs:documentation>
+			<mer-meta:DataItemReference>PSD008</mer-meta:DataItemReference>
+			<mer-meta:DataItemName>Product Sales Data - Credit Agreement Sales</mer-meta:DataItemName>
+		</xs:documentation>  
+	</xs:annotation>
+	
+	<xs:include schemaLocation="../../CommonTypes/v18/CommonTypes-Schema.xsd"/>
+	
+	<xs:element name="PSD008-CreditAgreementSales">
+
+		<xs:complexType>
+			<xs:sequence>
+				
+				<xs:element name="PSDFeedHeader" type="PSDFeedHeader"/>
+				
+				<xs:element name="PSD008FeedMsg" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Defines the individual transactions</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							
+							<xs:element name="CoreDetails">
+								<xs:complexType>
+									<xs:annotation>
+										<xs:documentation>Defines the elements that are common to all transactions.</xs:documentation>
+									</xs:annotation>
+									<xs:sequence>
+										<xs:element name="TransRef" minOccurs="1">
+											<xs:annotation>
+												<xs:documentation>The unique reference for the transaction, internal to the reporting firm, that will enable the firm to provide the FCA with more information concerning the transaction if required, e.g. the account or application number. This reference must be unique within each report file, with the exception that a reference can occur twice if one occurrence is a cancellation.</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="NonEmptyString">
+													<xs:maxLength value="25"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Cancellation" type="xs:boolean" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Indicates if the transaction is a cancellation. If ommitted this is logically the same as providing a value of 'false'.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+
+							<xs:element name="CreditSalesDetails" type="CreditSalesStructure">
+								<xs:annotation>
+									<xs:documentation>Defines the elements that are specific to a Regulated Credit Agreement Sales transaction.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				
+			</xs:sequence>
+		</xs:complexType>
+		
+	</xs:element>
+	
+	<xs:complexType name="CreditSalesStructure">
+		<xs:sequence>
+			<xs:element name="OriginationDetails" 		minOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="OriginationType" 											minOccurs="1">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="A"/>
+									<xs:enumeration value="B"/>
+									<xs:enumeration value="C"/>
+									<xs:enumeration value="X"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="EarlierAgreementTransRefStatus" 							minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="A"/>
+									<xs:enumeration value="B"/>
+									<xs:enumeration value="Z"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="EarlierAgreementTransRef" 		type="String25Type" 	minOccurs="0"/>
+						<xs:element name="PreviousLenderRegulatoryStatus" 							minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="A1"/>
+									<xs:enumeration value="A2"/>
+									<xs:enumeration value="X"/>
+									<xs:enumeration value="Z1"/>
+									<xs:enumeration value="Z2"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="PreviousLenderFRN" 				type="FRNType" 			minOccurs="0"/>
+						<xs:element name="PreviousLenderName" 				type="String100Type" 	minOccurs="0"/>
+						<xs:element name="DateLegalOwnershipAssigned"		type="xs:date" 			minOccurs="0"/>
+						<xs:element name="UseType" 													minOccurs="1">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="B"/>
+									<xs:enumeration value="P"/>
+									<xs:enumeration value="Z"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="DefaultNotice" 					type="YesNoType" 		minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			<xs:element name="SalesDetails"				minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="WasBrandNameUsed" 						minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="Y"/>
+									<xs:enumeration value="N"/>
+									<xs:enumeration value="Z"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="BrandRepresents" 							minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="A"/>
+									<xs:enumeration value="B"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="BrandName"		type="String100Type"	minOccurs="0"/>
+						<xs:element name="ProductAvailability" 						minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="A"/>
+									<xs:enumeration value="B"/>
+									<xs:enumeration value="C"/>
+									<xs:enumeration value="X"/>
+									<xs:enumeration value="Z"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="AnyFinProm" 								minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="Y1"/>
+									<xs:enumeration value="Y2"/>
+									<xs:enumeration value="Y3"/>
+									<xs:enumeration value="N"/>
+									<xs:enumeration value="Z"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="FinPromAPR" 		type="PercentDP2Type"	minOccurs="0"/>
+						<xs:element name="ProductRef" 		type="String25Type" 	minOccurs="0"/>
+						<xs:element name="ProductName" 		type="String100Type" 	minOccurs="0"/>
+						<xs:element name="FinPromRestrictedAccessToCredit" 			minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="Y"/>
+									<xs:enumeration value="N"/>
+									<xs:enumeration value="Z"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="FinPromImproveCreditScore" 				minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="Y"/>
+									<xs:enumeration value="N"/>
+									<xs:enumeration value="Z"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="HowSaleMade" 								minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="A1"/>
+									<xs:enumeration value="A2"/>
+									<xs:enumeration value="B"/>
+									<xs:enumeration value="C"/>
+									<xs:enumeration value="D"/>
+									<xs:enumeration value="E"/>
+									<xs:enumeration value="F"/>
+									<xs:enumeration value="W"/>
+									<xs:enumeration value="X"/>
+									<xs:enumeration value="Z"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="TradePostcode"	type="PostCodeType"		minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			<xs:element name="CreditBrokerDetails" 		minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="IntroductionEffected" 												minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="A1"/>
+									<xs:enumeration value="A2"/>
+									<xs:enumeration value="B"/>
+									<xs:enumeration value="C"/>
+									<xs:enumeration value="N"/>
+									<xs:enumeration value="Z"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="CreditBrokerFRN" 				type="FRNType"							minOccurs="0"/>
+						<xs:element name="CreditBrokerName" 			type="String100Type" 					minOccurs="0"/>
+						<xs:element name="CommissionToCreditBroker" 	type="NonNegativeMonetaryFloat2Type"	minOccurs="0"/>
+						<xs:element name="CommissionFromCreditBroker" 	type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			<xs:element name="P2PDetails" 				minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="P2PAgreement" 							minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="A1"/>
+									<xs:enumeration value="A2"/>
+									<xs:enumeration value="B"/>
+									<xs:enumeration value="C"/>
+									<xs:enumeration value="N"/>
+									<xs:enumeration value="Z"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="P2POperatorFRN" 	type="FRNType"			minOccurs="0"/>
+						<xs:element name="P2POperatorName"	type="String100Type" 	minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			<xs:element name="AgreementDuration" 		minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="AgreementExecutionDate" 		type="xs:date" 		minOccurs="0"/>
+						<xs:element name="OpenEndAgreement" 			type="YesNoType"	minOccurs="0"/>
+						<xs:element name="AgreementEndDate" 			type="xs:date" 		minOccurs="0"/>
+						<xs:element name="MinDurationOpenEndAgreement"	type="YesNoType" 	minOccurs="0"/>
+						<xs:element name="MinDurationEndDate" 			type="xs:date" 		minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			<xs:element name="AgreementCharacteristics"	minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="CreditTokenAgreement"	type="YesNoType"	minOccurs="0"/>
+						<xs:element name="CreditType" 								minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="FS"/>
+									<xs:enumeration value="RA"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="RunningAccountDetails" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="RunningAccountType" 									minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="D"/>
+												<xs:enumeration value="W"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="PaymentNetwork" 										minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="W"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="RevolvingCreditSupplierType" 							minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="RevolvingCreditSupplierStatus" 						minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A1"/>
+												<xs:enumeration value="A2"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="X"/>
+												<xs:enumeration value="Z1"/>
+												<xs:enumeration value="Z2"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="RevolvingCreditSupplierFRN"	type="FRNType" 			minOccurs="0"/>
+									<xs:element name="RevolvingCreditSupplierName"	type="String100Type"	minOccurs="0"/>
+									<xs:element name="BNPLAgreement"				type="YesNoType" 		minOccurs="0"/>
+									<xs:element name="PremiumFeeType" 										minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="FixedSumDetails" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="LendingType" 																minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="SupplierStatus" 															minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A1"/>
+												<xs:enumeration value="A2"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="X"/>
+												<xs:enumeration value="Z1"/>
+												<xs:enumeration value="Z2"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="SupplierFRN"						type="FRNType" 							minOccurs="0"/>
+									<xs:element name="SupplierName"						type="String100Type"					minOccurs="0"/>
+									<xs:element name="ContractType" 															minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="D"/>
+												<xs:enumeration value="E"/>
+												<xs:enumeration value="X"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="HandbookType" 															minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="D"/>
+												<xs:enumeration value="X"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="BNPLPromoEndDate"					type="xs:date" 							minOccurs="0"/>
+									<xs:element name="GoodsOrServicesType" 														minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="D"/>
+												<xs:enumeration value="E"/>
+												<xs:enumeration value="F"/>
+												<xs:enumeration value="G"/>
+												<xs:enumeration value="H"/>
+												<xs:enumeration value="I"/>
+												<xs:enumeration value="J"/>
+												<xs:enumeration value="K"/>
+												<xs:enumeration value="L"/>
+												<xs:enumeration value="M"/>
+												<xs:enumeration value="N"/>
+												<xs:enumeration value="O"/>
+												<xs:enumeration value="P"/>
+												<xs:enumeration value="Q"/>
+												<xs:enumeration value="R"/>
+												<xs:enumeration value="W1"/>
+												<xs:enumeration value="W2"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="MotorVehicleCondition" 													minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="MotorVehicleType" 														minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="D"/>
+												<xs:enumeration value="W"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="PCPAgreement"						type="YesNoType" 						minOccurs="0"/>
+									<xs:element name="GuaranteedMinFutureValue"			type="NonNegativeMonetaryFloat2Type"	minOccurs="0"/>
+									<xs:element name="AnticipatedAnnualMileage"			type="NonNegativeIntegerType" 			minOccurs="0"/>
+									<xs:element name="PurposeOfBorrowing" 														minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A1"/>
+												<xs:enumeration value="A2"/>
+												<xs:enumeration value="A0"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="D"/>
+												<xs:enumeration value="E"/>
+												<xs:enumeration value="F"/>
+												<xs:enumeration value="W"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="PortionLoanToExistingCreditors"	type="YesNoType"						minOccurs="0"/>
+									<xs:element name="PaymentValueToExistingCreditors"	type="NonNegativeMonetaryFloat2Type"	minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>						
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			<xs:element name="BorrowerDetails" 			minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="BorrowerType" 											minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="A"/>
+									<xs:enumeration value="B"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="RecipientOfCreditRef" 	type="String25Type" 			minOccurs="0"/>
+						<xs:element name="RecipientOfCreditName"	type="String100Type" 			minOccurs="0"/>
+						<xs:element name="NumberOfBorrowers" 		type="NonNegativeIntegerType"	minOccurs="0"/>
+						<xs:element name="Borrower" 												minOccurs="0" 	maxOccurs="10">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="BorrowerRef"		type="String25Type"	minOccurs="0"/>
+									<xs:element name="BorrowerDOB" 		type="xs:date" 		minOccurs="0"/>
+									<xs:element name="BorrowerAddressType" 					minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="W"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="BorrowerPostcode"	type="PostCodeType"	minOccurs="0"/>
+									<xs:element name="BorrowerResidentialStatus" 			minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A1"/>
+												<xs:enumeration value="A2"/>
+												<xs:enumeration value="A0"/>
+												<xs:enumeration value="B1"/>
+												<xs:enumeration value="B2"/>
+												<xs:enumeration value="B0"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="W"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="BorrowerEmploymentStatus" 			minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A1"/>
+												<xs:enumeration value="A2"/>
+												<xs:enumeration value="A0"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="W"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="BorrowerEmploymentDetail" 			minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="W"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="BorrowerNotEmployedDetail" 			minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="D"/>
+												<xs:enumeration value="W"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="BorrowerCreditworthinessAssessment" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="BorrowerUnderwritingCheck" 													minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="Y"/>
+												<xs:enumeration value="N"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="BorrowerIncomeExpenditureType" 												minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="D"/>
+												<xs:enumeration value="E"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="FutureLumpSumRepaymentType" 													minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="D"/>
+												<xs:enumeration value="W1"/>
+												<xs:enumeration value="W2"/>
+												<xs:enumeration value="X"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="FutureEarningsAgreement"				type="YesNoType"						minOccurs="0"/>
+									<xs:element name="BorrowerFinancialDependants" 													minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="0"/>
+												<xs:enumeration value="1"/>
+												<xs:enumeration value="2"/>
+												<xs:enumeration value="3"/>
+												<xs:enumeration value="4"/>
+												<xs:enumeration value="5"/>
+												<xs:enumeration value="6"/>
+												<xs:enumeration value="7"/>
+												<xs:enumeration value="8"/>
+												<xs:enumeration value="9"/>
+												<xs:enumeration value="10"/>
+												<xs:enumeration value="W"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="BorrowerIncomeValues" 														minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="BorrowerMonthlyIncomeUsed" 			type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+									<xs:element name="BorrowerMonthlyExpenditureUsed" 		type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+									<xs:element name="BorrowerMonthlyIncomeDeclared" 		type="NonNegativeMonetaryFloat2Type"	minOccurs="0"/>
+									<xs:element name="BorrowerMonthlyExpenditureDeclared"	type="NonNegativeMonetaryFloat2Type"	minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="BorrowerSpecificNonDiscretionaryExpenditure" minOccurs="0" maxOccurs="3">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="BorrowerSpecificExpenditureType" 											minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="BorrowerSpecificExpenditureAmount" type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			<xs:element name="SecurityDetails" 			minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SecurityType" 													minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="A"/>
+									<xs:enumeration value="B"/>
+									<xs:enumeration value="C"/>
+									<xs:enumeration value="D"/>
+									<xs:enumeration value="E"/>
+									<xs:enumeration value="F"/>
+									<xs:enumeration value="W"/>
+									<xs:enumeration value="X"/>
+									<xs:enumeration value="Z"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="SecurityEstimatedValue"	type="NonNegativeMonetaryFloat2Type"	minOccurs="0"/>
+						<xs:element name="FutureLumpSumSecurityType" 										minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="A"/>
+									<xs:enumeration value="B"/>
+									<xs:enumeration value="C"/>
+									<xs:enumeration value="D"/>
+									<xs:enumeration value="W"/>
+									<xs:enumeration value="Z"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="GuarantorNaturalPerson"	type="YesNoType" 						minOccurs="0"/>
+						<xs:element name="GuarantorDetails"													minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="GuarantorRef"			type="String25Type"		minOccurs="0"/>
+									<xs:element name="GuarantorDOB" 		type="xs:date" 			minOccurs="0"/>
+									<xs:element name="GuarantorAddressType" 						minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="W"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="GuarantorPostcode"	type="PostCodeType"		minOccurs="0"/>
+									<xs:element name="GuarantorResidentialStatus" 					minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A1"/>
+												<xs:enumeration value="A2"/>
+												<xs:enumeration value="A0"/>
+												<xs:enumeration value="B1"/>
+												<xs:enumeration value="B2"/>
+												<xs:enumeration value="B0"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="W"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="GuarantorEmploymentStatus" 					minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A1"/>
+												<xs:enumeration value="A2"/>
+												<xs:enumeration value="A0"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="W"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="GuarantorEmploymentDetail" 					minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="W"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="GuarantorNotEmployedDetail" 					minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="D"/>
+												<xs:enumeration value="W"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="GuarantorCreditworthinessAssessment" 			minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="GuarantorUnderwritingCheck" 													minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="Y"/>
+												<xs:enumeration value="N"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="GuarantorIncomeExpenditureType" 												minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="D"/>
+												<xs:enumeration value="E"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="GuarantorFinancialDependants" 												minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="0"/>
+												<xs:enumeration value="1"/>
+												<xs:enumeration value="2"/>
+												<xs:enumeration value="3"/>
+												<xs:enumeration value="4"/>
+												<xs:enumeration value="5"/>
+												<xs:enumeration value="6"/>
+												<xs:enumeration value="7"/>
+												<xs:enumeration value="8"/>
+												<xs:enumeration value="9"/>
+												<xs:enumeration value="10"/>
+												<xs:enumeration value="W"/>
+												<xs:enumeration value="Z"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="GuarantorIncomeValues" 														minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="GuarantorMonthlyIncomeUsed" 			type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+									<xs:element name="GuarantorMonthlyExpenditureUsed" 		type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+									<xs:element name="GuarantorMonthlyIncomeDeclared" 		type="NonNegativeMonetaryFloat2Type"	minOccurs="0"/>
+									<xs:element name="GuarantorMonthlyExpenditureDeclared"	type="NonNegativeMonetaryFloat2Type"	minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="GuarantorSpecificNonDiscretionaryExpenditure" minOccurs="0" maxOccurs="3">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="GuarantorSpecificExpenditureType" 										minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="GuarantorSpecificExpenditureAmount" type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>			
+			
+			<xs:element name="TotalAmountCredit" 		minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TotalAmountOfCredit"	type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+						<xs:element name="NotAdvanced"			type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+						<xs:element name="CashPrice"			type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+						<xs:element name="AdvancePayment"		type="NonNegativeMonetaryFloat2Type"	minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>		
+			
+			<xs:element name="TotalChargeCredit" 		minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="APR"							type="PercentDP2Type" 					minOccurs="0"/>
+						<xs:element name="InterestRateType" 													minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="A"/>
+									<xs:enumeration value="B"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="InterestRateReduction"		type="YesNoType" 						minOccurs="0"/>
+						<xs:element name="AnnualInterestRate"			type="PercentDP2Type"					minOccurs="0"/>
+						<xs:element name="TotalChargeForCredit"			type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+						<xs:element name="FeesChargesToCreditBroker"	type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+						<xs:element name="OneOffCosts"					type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+						<xs:element name="PeriodicFeesChargesTotal"		type="NonNegativeMonetaryFloat2Type"	minOccurs="0"/>
+						<xs:element name="PeriodicFeesChargesAnnual"	type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+						<xs:element name="PeriodicFeesChargesPromo"		type="YesNoType"						minOccurs="0"/>
+						<xs:element name="TotalInterest"				type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+						<xs:element name="OtherCosts"					type="NonNegativeMonetaryFloat2Type"	minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			<xs:element name="RunningAccountUsage" 	minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="InstalmentPlan" 													minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="A"/>
+									<xs:enumeration value="B"/>
+									<xs:enumeration value="C"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Rewards"					type="YesNoType" 						minOccurs="0"/>
+						<xs:element name="RewardType" 														minOccurs="0" maxOccurs="4">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="A"/>
+									<xs:enumeration value="B"/>
+									<xs:enumeration value="C"/>
+									<xs:enumeration value="W"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="NonSterlingPercentageFee"	type="PercentDP2Type"					minOccurs="0"/>
+						<xs:element name="NonSterlingMinimumFee"	type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+						<xs:element name="DrawdownActivity" 												minOccurs="0" maxOccurs="5">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="DrawdownType" 															minOccurs="0">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="A"/>
+												<xs:enumeration value="B"/>
+												<xs:enumeration value="C"/>
+												<xs:enumeration value="D"/>
+												<xs:enumeration value="W"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="DrawdownPromoPeriod"				type="YesNoType" 						minOccurs="0"/>
+									<xs:element name="DrawdownPromoInterestRate"		type="PercentDP2Type" 					minOccurs="0"/>
+									<xs:element name="DrawdownPromoPercentageFee"		type="PercentDP2Type" 					minOccurs="0"/>
+									<xs:element name="DrawdownPromoMinimumFee"			type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+									<xs:element name="DrawdownPromoFixedFee"			type="NonNegativeMonetaryFloat2Type"	minOccurs="0"/>
+									<xs:element name="DrawdownPromoEndDate"				type="xs:date" 							minOccurs="0"/>
+									<xs:element name="DrawdownPromoRateEndDate"			type="xs:date"							minOccurs="0"/>
+									<xs:element name="DrawdownRegularInterestRate"		type="PercentDP2Type"					minOccurs="0"/>
+									<xs:element name="DrawdownRegularPercentageFee"		type="PercentDP2Type"					minOccurs="0"/>
+									<xs:element name="DrawdownRegularMinimumFee"		type="NonNegativeMonetaryFloat2Type" 	minOccurs="0"/>
+									<xs:element name="DrawdownRegularFixedFee"			type="NonNegativeMonetaryFloat2Type"	minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="PeriodicPremiumFeeInterestRate"	type="PercentDP2Type"					minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			<xs:element name="PenaltyCharges" 			minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="PenaltyLateRepayment"		type="NonNegativeMonetaryFloat2Type" minOccurs="0"/>
+						<xs:element name="PenaltyRepaymentReturned"	type="NonNegativeMonetaryFloat2Type" minOccurs="0"/>
+						<xs:element name="PenaltyOverCreditLimit"	type="NonNegativeMonetaryFloat2Type" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			<xs:element name="Repayments" 				minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="RepaymentMethod" 													minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="A"/>
+									<xs:enumeration value="B"/>
+									<xs:enumeration value="C"/>
+									<xs:enumeration value="D"/>
+									<xs:enumeration value="W"/>
+									<xs:enumeration value="Z"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="RepaymentFrequency" 												minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="A"/>
+									<xs:enumeration value="B"/>
+									<xs:enumeration value="C"/>
+									<xs:enumeration value="D"/>
+									<xs:enumeration value="E"/>
+									<xs:enumeration value="F"/>
+									<xs:enumeration value="G"/>
+									<xs:enumeration value="W"/>
+									<xs:enumeration value="X"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="RepaymentNumberScheduled"	type="NonNegativeIntegerType"			minOccurs="0"/>
+						<xs:element name="RepaymentRegularAmount"	type="NonNegativeMonetaryFloat2Type"	minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+		</xs:sequence>
+	</xs:complexType>
+	
+</xs:schema>
