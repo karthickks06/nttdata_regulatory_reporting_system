@@ -8,6 +8,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """Application settings loaded from environment variables"""
 
+    # Base Directory
+    BASE_DIR: Path = Path(__file__).parent.parent.parent
+
     # Application Settings
     ENVIRONMENT: str = "development"
     DEBUG: bool = True

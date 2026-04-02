@@ -1,9 +1,11 @@
 """API dependencies for authentication and authorization"""
 
 from typing import Optional, List
+from uuid import UUID
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from jose import JWTError, jwt
 
 from app.db.postgres import get_db
@@ -44,13 +46,20 @@ async def get_current_user(
             settings.SECRET_KEY,
             algorithms=[settings.ALGORITHM]
         )
-        user_id: int = payload.get("sub")
-        if user_id is None:
+        user_id_str: str = payload.get("sub")
+        if user_id_str is None:
             raise credentials_exception
-    except JWTError:
+
+        # Convert string UUID to UUID object
+        user_id = UUID(user_id_str)
+    except (JWTError, ValueError) as e:
         raise credentials_exception
 
-    result = await db.execute(select(User).where(User.id == int(user_id)))
+    # Load user with roles and permissions
+    stmt = select(User).where(User.id == user_id).options(
+        selectinload(User.roles).selectinload(User.roles[0].permissions)
+    )
+    result = await db.execute(stmt)
     user = result.scalar_one_or_none()
 
     if user is None:
