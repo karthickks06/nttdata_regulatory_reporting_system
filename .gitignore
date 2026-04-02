@@ -77,13 +77,16 @@ Desktop.ini
 postgresql/
 pgdata/
 
-# ChromaDB
+# ChromaDB - stored inside storage folder
 chroma_data/
 chroma_db/
 *.chroma/
 
-# Storage and uploads
+# Storage folder - all application-generated files
 storage/
+!storage/.gitkeep
+
+# Legacy paths (if any exist outside storage)
 uploads/
 documents/
 reports/

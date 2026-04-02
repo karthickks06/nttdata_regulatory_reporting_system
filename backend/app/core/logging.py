@@ -47,9 +47,9 @@ def setup_logging(
         handlers.append(console_handler)
 
     if log_to_file:
-        # Create logs directory if it doesn't exist
-        log_dir = Path(settings.BASE_DIR) / "logs"
-        log_dir.mkdir(exist_ok=True)
+        # Create logs directory inside storage folder
+        log_dir = Path(settings.STORAGE_PATH) / "logs" / "application"
+        log_dir.mkdir(parents=True, exist_ok=True)
 
         # Main application log with rotation
         file_path = log_file or str(log_dir / "app.log")
@@ -147,8 +147,8 @@ def configure_agent_logging(agent_name: str) -> logging.Logger:
     """
     logger = logging.getLogger(f"agent.{agent_name}")
 
-    # Create agent-specific log file
-    log_dir = Path(settings.BASE_DIR) / "logs" / "agents"
+    # Create agent-specific log file inside storage folder
+    log_dir = Path(settings.STORAGE_PATH) / "logs" / "agents"
     log_dir.mkdir(parents=True, exist_ok=True)
 
     file_handler = RotatingFileHandler(
@@ -180,8 +180,8 @@ def configure_audit_logging() -> logging.Logger:
     """
     audit_logger = logging.getLogger("audit")
 
-    # Create audit log directory
-    log_dir = Path(settings.BASE_DIR) / "logs" / "audit"
+    # Create audit log directory inside storage folder
+    log_dir = Path(settings.STORAGE_PATH) / "logs" / "audit"
     log_dir.mkdir(parents=True, exist_ok=True)
 
     # Audit logs should be append-only and never rotated by size

@@ -28,11 +28,11 @@ class Settings(BaseSettings):
     # OpenAI API
     OPENAI_API_KEY: str = ""
 
-    # Storage
+    # Storage - all application files stored here
     STORAGE_PATH: Path = Path("./storage")
 
-    # ChromaDB
-    CHROMA_PATH: Path = Path("./chroma_data")
+    # ChromaDB - stored inside storage folder
+    CHROMA_PATH: Path = Path("./storage/chroma_data")
 
     # Rate Limiting
     RATE_LIMIT_ENABLED: bool = True
