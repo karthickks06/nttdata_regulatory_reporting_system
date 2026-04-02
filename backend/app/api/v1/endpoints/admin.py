@@ -3,12 +3,15 @@ Admin API Endpoints - System administration and monitoring
 """
 from typing import Optional
 from datetime import datetime, timedelta
+from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, text
+from pydantic import BaseModel, EmailStr, Field
 
 from app.api.deps import get_db, get_current_user, check_permission
 from app.models.user import User
+from app.models.role import Role
 from app.models.cache import Cache
 from app.models.task_queue import TaskQueue
 from app.models.regulatory_update import RegulatoryUpdate
@@ -17,8 +20,128 @@ from app.models.report import Report
 from app.models.workflow import Workflow
 from app.services.audit_service import AuditService
 from app.services.workflow_storage import WorkflowStorageService
+from app.core.security import get_password_hash
 
 router = APIRouter()
+
+
+# Schema for admin creation
+class CreateAdminRequest(BaseModel):
+    """Request schema for creating the first admin user"""
+    username: str = Field(..., min_length=3, max_length=50, description="Username")
+    email: EmailStr = Field(..., description="Email address")
+    password: str = Field(..., min_length=8, description="Password (minimum 8 characters)")
+    full_name: Optional[str] = Field(default=None, description="Full name")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "username": "admin",
+                "email": "admin@nttdata.com",
+                "password": "SecurePass123!",
+                "full_name": "System Administrator"
+            }
+        }
+
+
+@router.post("/setup/create-admin", status_code=status.HTTP_201_CREATED, tags=["Setup"])
+async def create_admin_user(
+    admin_data: CreateAdminRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Create the first admin/superuser account.
+
+    **IMPORTANT**: This endpoint should only be used once to create the initial admin.
+    After the first admin is created, all other users should be created by the admin
+    via the /api/v1/users/ endpoint.
+
+    **Security**: This endpoint is only available when NO superuser exists in the system.
+
+    **Steps**:
+    1. Call this endpoint with admin credentials
+    2. Login with the created admin account
+    3. Create other users via the admin panel
+
+    **Note**: In production, consider disabling this endpoint after initial setup.
+    """
+    # Check if any superuser already exists
+    existing_superuser = await db.scalar(
+        select(User).where(User.is_superuser == True).limit(1)
+    )
+
+    if existing_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin user already exists. Please login with existing admin credentials."
+        )
+
+    # Check if username already exists
+    existing_user = await db.scalar(
+        select(User).where(User.username == admin_data.username)
+    )
+
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Username already exists"
+        )
+
+    # Check if email already exists
+    existing_email = await db.scalar(
+        select(User).where(User.email == admin_data.email)
+    )
+
+    if existing_email:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email already exists"
+        )
+
+    # Create admin user
+    admin_user = User(
+        username=admin_data.username,
+        email=admin_data.email,
+        full_name=admin_data.full_name or "System Administrator",
+        hashed_password=get_password_hash(admin_data.password),
+        is_active=True,
+        is_superuser=True,
+        is_verified=True
+    )
+
+    db.add(admin_user)
+    await db.commit()
+    await db.refresh(admin_user)
+
+    # Get or create Admin role
+    admin_role = await db.scalar(
+        select(Role).where(Role.name == "Admin")
+    )
+
+    if not admin_role:
+        admin_role = Role(
+            name="Admin",
+            description="System Administrator with full access"
+        )
+        db.add(admin_role)
+        await db.commit()
+        await db.refresh(admin_role)
+
+    # Assign admin role
+    admin_user.roles.append(admin_role)
+    await db.commit()
+
+    return {
+        "message": "Admin user created successfully",
+        "user_id": str(admin_user.id),
+        "username": admin_user.username,
+        "email": admin_user.email,
+        "next_steps": [
+            "1. Login via POST /api/v1/auth/login",
+            "2. Create other users via POST /api/v1/users/",
+            "3. Manage roles and permissions via /api/v1/roles/ and /api/v1/permissions/"
+        ]
+    }
 
 
 @router.get("/system/health")

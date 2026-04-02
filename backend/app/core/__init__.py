@@ -9,6 +9,13 @@ from app.core.security import (
 )
 from app.core.rbac import RBACService
 from app.core.logging import setup_logging, get_logger, configure_agent_logging, audit_logger
+from app.core.llm_client import (
+    LLMClient,
+    get_llm_client,
+    chat,
+    chat_async,
+    embed,
+)
 from app.core.exceptions import (
     NotFoundException,
     UnauthorizedException,
@@ -42,6 +49,12 @@ __all__ = [
     "get_logger",
     "configure_agent_logging",
     "audit_logger",
+    # LLM Client
+    "LLMClient",
+    "get_llm_client",
+    "chat",
+    "chat_async",
+    "embed",
     # Exceptions
     "NotFoundException",
     "UnauthorizedException",

@@ -17,7 +17,7 @@ _embedding_function = None
 
 def get_embedding_function():
     """
-    Get or create embedding function.
+    Get or create embedding function based on LLM provider configuration.
 
     Returns:
         Embedding function instance
@@ -25,14 +25,37 @@ def get_embedding_function():
     global _embedding_function
 
     if _embedding_function is None:
-        # Use OpenAI embeddings if API key is available
-        if settings.OPENAI_API_KEY:
-            _embedding_function = embedding_functions.OpenAIEmbeddingFunction(
-                api_key=settings.OPENAI_API_KEY,
-                model_name="text-embedding-3-small"
-            )
-        else:
-            # Fallback to sentence transformers
+        try:
+            # Use Azure OpenAI if configured
+            if settings.LLM_PROVIDER == "azure" and settings.AZURE_OPENAI_API_KEY:
+                _embedding_function = embedding_functions.OpenAIEmbeddingFunction(
+                    api_key=settings.AZURE_OPENAI_API_KEY,
+                    api_base=settings.AZURE_OPENAI_ENDPOINT,
+                    api_type="azure",
+                    api_version=settings.AZURE_OPENAI_API_VERSION,
+                    model_name=settings.AZURE_OPENAI_DEPLOYMENT
+                )
+                logger.info("Using Azure OpenAI embeddings")
+
+            # Use OpenAI if configured
+            elif settings.LLM_PROVIDER == "openai" and settings.OPENAI_API_KEY:
+                _embedding_function = embedding_functions.OpenAIEmbeddingFunction(
+                    api_key=settings.OPENAI_API_KEY,
+                    model_name="text-embedding-3-small"
+                )
+                logger.info("Using OpenAI embeddings")
+
+            # Fallback to sentence transformers (local, no API key needed)
+            else:
+                logger.warning("No LLM API key configured, using local sentence transformers")
+                _embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(
+                    model_name="all-MiniLM-L6-v2"
+                )
+                logger.info("Using SentenceTransformer embeddings (local)")
+
+        except Exception as e:
+            logger.error(f"Failed to initialize embedding function: {e}")
+            logger.warning("Falling back to local sentence transformers")
             _embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(
                 model_name="all-MiniLM-L6-v2"
             )

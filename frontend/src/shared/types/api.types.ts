@@ -23,10 +23,11 @@ export interface LoginResponse {
   token_type: string;
 }
 
-export interface RegisterRequest {
-  username: string;
-  email: string;
-  password: string;
-  full_name?: string;
-  department?: string;
-}
+// Note: User registration is disabled. Users are created by admins only.
+// export interface RegisterRequest {
+//   username: string;
+//   email: string;
+//   password: string;
+//   full_name?: string;
+//   department?: string;
+// }

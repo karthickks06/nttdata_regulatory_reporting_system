@@ -25,8 +25,11 @@ This system transforms fragmented regulatory reporting into a unified, AI-powere
 |----------|-------------|
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Complete system architecture, RBAC, agent implementation |
 | [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) | Directory structure, file organization, setup guide |
+| [API_DOCUMENTATION.md](API_DOCUMENTATION.md) | Complete API reference and testing guide |
 | [STORAGE_STRUCTURE.md](STORAGE_STRUCTURE.md) | Centralized storage structure and file management |
 | [STORAGE_MIGRATION.md](STORAGE_MIGRATION.md) | Storage centralization migration guide |
+| [LLM_CONFIGURATION.md](LLM_CONFIGURATION.md) | LLM setup guide (OpenAI & Azure OpenAI) |
+| [ENV_SETUP_GUIDE.md](ENV_SETUP_GUIDE.md) | Environment configuration step-by-step |
 | [VALIDATION_REPORT.md](VALIDATION_REPORT.md) | Complete validation report and production readiness |
 | [backend/app/agents/config/prompts.py](backend/app/agents/config/prompts.py) | All AI agent prompts (7 hierarchical + 7 sub-agents) |
 
