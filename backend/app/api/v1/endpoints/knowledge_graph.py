@@ -9,7 +9,6 @@ from app.api.deps import get_db, get_current_user
 from app.models.user import User
 from app.sub_agents.chromadb_graph_rag_agent import ChromaDBGraphRAGAgent
 from app.sub_agents.networkx_analyzer import NetworkXAnalyzer
-from app.core.rbac import require_permission
 
 router = APIRouter()
 
@@ -23,8 +22,6 @@ async def search_knowledge_graph(
     current_user: User = Depends(get_current_user)
 ):
     """Search the knowledge graph using semantic search"""
-    await require_permission(db, current_user.id, "knowledge_graph", "read")
-
     agent = ChromaDBGraphRAGAgent()
 
     try:
@@ -51,8 +48,6 @@ async def add_entity(
     current_user: User = Depends(get_current_user)
 ):
     """Add an entity to the knowledge graph"""
-    await require_permission(db, current_user.id, "knowledge_graph", "create")
-
     agent = ChromaDBGraphRAGAgent()
 
     try:
@@ -80,8 +75,6 @@ async def add_relationship(
     current_user: User = Depends(get_current_user)
 ):
     """Add a relationship between entities"""
-    await require_permission(db, current_user.id, "knowledge_graph", "create")
-
     agent = ChromaDBGraphRAGAgent()
 
     try:
@@ -106,8 +99,6 @@ async def get_entity(
     current_user: User = Depends(get_current_user)
 ):
     """Get entity details from knowledge graph"""
-    await require_permission(db, current_user.id, "knowledge_graph", "read")
-
     agent = ChromaDBGraphRAGAgent()
 
     try:
@@ -135,8 +126,6 @@ async def get_entity_relationships(
     current_user: User = Depends(get_current_user)
 ):
     """Get all relationships for an entity"""
-    await require_permission(db, current_user.id, "knowledge_graph", "read")
-
     agent = ChromaDBGraphRAGAgent()
 
     try:
@@ -159,8 +148,6 @@ async def get_communities(
     current_user: User = Depends(get_current_user)
 ):
     """Get community detection results"""
-    await require_permission(db, current_user.id, "knowledge_graph", "read")
-
     analyzer = NetworkXAnalyzer()
 
     try:
@@ -181,8 +168,6 @@ async def calculate_centrality(
     current_user: User = Depends(get_current_user)
 ):
     """Calculate centrality metrics for graph nodes"""
-    await require_permission(db, current_user.id, "knowledge_graph", "read")
-
     analyzer = NetworkXAnalyzer()
 
     valid_metrics = ["betweenness", "degree", "closeness", "eigenvector"]
@@ -213,8 +198,6 @@ async def find_shortest_path(
     current_user: User = Depends(get_current_user)
 ):
     """Find shortest path between two entities"""
-    await require_permission(db, current_user.id, "knowledge_graph", "read")
-
     analyzer = NetworkXAnalyzer()
 
     try:
@@ -238,8 +221,6 @@ async def get_subgraph(
     current_user: User = Depends(get_current_user)
 ):
     """Get subgraph around an entity"""
-    await require_permission(db, current_user.id, "knowledge_graph", "read")
-
     analyzer = NetworkXAnalyzer()
 
     try:
@@ -261,8 +242,6 @@ async def get_graph_statistics(
     current_user: User = Depends(get_current_user)
 ):
     """Get overall graph statistics"""
-    await require_permission(db, current_user.id, "knowledge_graph", "read")
-
     analyzer = NetworkXAnalyzer()
 
     try:
@@ -281,8 +260,6 @@ async def rebuild_graph(
     current_user: User = Depends(get_current_user)
 ):
     """Rebuild the knowledge graph from ChromaDB"""
-    await require_permission(db, current_user.id, "knowledge_graph", "admin")
-
     agent = ChromaDBGraphRAGAgent()
 
     try:

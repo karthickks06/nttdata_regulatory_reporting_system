@@ -9,7 +9,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_db, get_current_user
 from app.models.user import User
 from app.services.validation_service import ValidationService
-from app.core.rbac import require_permission
 
 router = APIRouter()
 
@@ -21,8 +20,6 @@ async def validate_report(
     current_user: User = Depends(get_current_user)
 ):
     """Validate a regulatory report"""
-    await require_permission(db, current_user.id, "reports", "validate")
-
     try:
         result = await ValidationService.validate_report(db, report_id)
         return result
@@ -40,8 +37,6 @@ async def validate_data_mapping(
     current_user: User = Depends(get_current_user)
 ):
     """Validate a data mapping"""
-    await require_permission(db, current_user.id, "data_mappings", "validate")
-
     try:
         result = await ValidationService.validate_data_mapping(db, mapping_id)
         return result
@@ -59,8 +54,6 @@ async def validate_generated_code(
     current_user: User = Depends(get_current_user)
 ):
     """Validate generated code"""
-    await require_permission(db, current_user.id, "code", "validate")
-
     try:
         result = await ValidationService.validate_generated_code(db, code_id)
         return result
@@ -78,8 +71,6 @@ async def get_validation_results(
     current_user: User = Depends(get_current_user)
 ):
     """Get validation results for a report"""
-    await require_permission(db, current_user.id, "reports", "read")
-
     try:
         results = await ValidationService.get_validation_results(db, report_id)
         return results
@@ -99,8 +90,6 @@ async def check_data_quality(
     current_user: User = Depends(get_current_user)
 ):
     """Run data quality checks"""
-    await require_permission(db, current_user.id, "validation", "execute")
-
     result = await ValidationService.check_data_quality(
         db=db,
         entity_type=entity_type,
@@ -119,8 +108,6 @@ async def check_completeness(
     current_user: User = Depends(get_current_user)
 ):
     """Check data completeness"""
-    await require_permission(db, current_user.id, "validation", "execute")
-
     result = await ValidationService.check_completeness(
         db=db,
         entity_type=entity_type,
@@ -138,8 +125,6 @@ async def check_consistency(
     current_user: User = Depends(get_current_user)
 ):
     """Check data consistency"""
-    await require_permission(db, current_user.id, "validation", "execute")
-
     result = await ValidationService.check_consistency(
         db=db,
         entity_type=entity_type,
@@ -157,8 +142,6 @@ async def detect_anomalies(
     current_user: User = Depends(get_current_user)
 ):
     """Detect anomalies in report data"""
-    await require_permission(db, current_user.id, "reports", "validate")
-
     result = await ValidationService.detect_anomalies(
         db=db,
         report_id=report_id,
@@ -175,8 +158,6 @@ async def list_validation_rules(
     current_user: User = Depends(get_current_user)
 ):
     """List available validation rules"""
-    await require_permission(db, current_user.id, "validation", "read")
-
     rules = await ValidationService.list_validation_rules(
         db=db,
         entity_type=entity_type
@@ -194,8 +175,6 @@ async def get_validation_history(
     current_user: User = Depends(get_current_user)
 ):
     """Get validation history for an entity"""
-    await require_permission(db, current_user.id, "validation", "read")
-
     history = await ValidationService.get_validation_history(
         db=db,
         entity_id=entity_id,

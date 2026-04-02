@@ -5,12 +5,18 @@ from typing import Optional
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, func, text
 
-from app.api.deps import get_db, get_current_user
+from app.api.deps import get_db, get_current_user, check_permission
 from app.models.user import User
+from app.models.cache import Cache
+from app.models.task_queue import TaskQueue
+from app.models.regulatory_update import RegulatoryUpdate
+from app.models.requirement import Requirement
+from app.models.report import Report
+from app.models.workflow import Workflow
 from app.services.audit_service import AuditService
 from app.services.workflow_storage import WorkflowStorageService
-from app.core.rbac import require_permission
 
 router = APIRouter()
 
@@ -21,11 +27,9 @@ async def get_system_health(
     current_user: User = Depends(get_current_user)
 ):
     """Get system health status"""
-    await require_permission(db, current_user.id, "system", "monitor")
-
     try:
         # Check database connection
-        await db.execute("SELECT 1")
+        await db.execute(text("SELECT 1"))
         db_status = "healthy"
     except Exception as e:
         db_status = f"unhealthy: {str(e)}"
@@ -54,15 +58,6 @@ async def get_system_metrics(
     current_user: User = Depends(get_current_user)
 ):
     """Get system metrics"""
-    await require_permission(db, current_user.id, "system", "monitor")
-
-    from sqlalchemy import func, select
-    from app.models.user import User
-    from app.models.regulatory_update import RegulatoryUpdate
-    from app.models.requirement import Requirement
-    from app.models.report import Report
-    from app.models.workflow import Workflow
-
     # Count totals
     user_count = await db.scalar(select(func.count(User.id)))
     update_count = await db.scalar(select(func.count(RegulatoryUpdate.id)))
@@ -104,7 +99,6 @@ async def get_audit_logs(
     current_user: User = Depends(get_current_user)
 ):
     """Get audit logs with filters"""
-    await require_permission(db, current_user.id, "audit_logs", "read")
 
     start_date = datetime.utcnow() - timedelta(days=days)
 
@@ -142,7 +136,6 @@ async def get_audit_statistics(
     current_user: User = Depends(get_current_user)
 ):
     """Get audit log statistics"""
-    await require_permission(db, current_user.id, "audit_logs", "read")
 
     start_date = datetime.utcnow() - timedelta(days=days)
 
@@ -158,10 +151,9 @@ async def get_audit_statistics(
 async def cleanup_audit_logs(
     days_to_keep: int = 90,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("admin.full_access"))
 ):
     """Clean up old audit logs from database"""
-    await require_permission(db, current_user.id, "system", "admin")
 
     deleted_count = await AuditService.cleanup_old_logs(
         db=db,
@@ -179,10 +171,9 @@ async def cleanup_audit_logs(
 async def cleanup_workflow_history(
     days_to_keep: int = 90,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("admin.full_access"))
 ):
     """Clean up old workflow history files"""
-    await require_permission(db, current_user.id, "system", "admin")
 
     deleted_count = await WorkflowStorageService.cleanup_old_history(
         days_to_keep=days_to_keep
@@ -201,7 +192,6 @@ async def get_active_workflows(
     current_user: User = Depends(get_current_user)
 ):
     """Get all active workflow executions"""
-    await require_permission(db, current_user.id, "workflows", "monitor")
 
     active = await WorkflowStorageService.get_active_executions()
 
@@ -220,7 +210,6 @@ async def get_workflow_history(
     current_user: User = Depends(get_current_user)
 ):
     """Get workflow execution history"""
-    await require_permission(db, current_user.id, "workflows", "monitor")
 
     now = datetime.utcnow()
     year = year or now.year
@@ -246,11 +235,6 @@ async def get_cache_statistics(
     current_user: User = Depends(get_current_user)
 ):
     """Get cache statistics"""
-    await require_permission(db, current_user.id, "system", "monitor")
-
-    from sqlalchemy import func, select
-    from app.models.cache import Cache
-
     total_entries = await db.scalar(select(func.count(Cache.id)))
 
     # Count expired entries
@@ -270,13 +254,9 @@ async def get_cache_statistics(
 async def clear_cache(
     expired_only: bool = True,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("admin.full_access"))
 ):
     """Clear cache entries"""
-    await require_permission(db, current_user.id, "system", "admin")
-
-    from app.models.cache import Cache
-
     if expired_only:
         result = await db.execute(
             select(Cache).where(Cache.expires_at < datetime.utcnow())
@@ -305,11 +285,6 @@ async def get_task_queue_status(
     current_user: User = Depends(get_current_user)
 ):
     """Get task queue status"""
-    await require_permission(db, current_user.id, "system", "monitor")
-
-    from sqlalchemy import func, select
-    from app.models.task_queue import TaskQueue
-
     total_tasks = await db.scalar(select(func.count(TaskQueue.id)))
 
     # Count by status

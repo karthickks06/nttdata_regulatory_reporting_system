@@ -230,7 +230,7 @@ async def get_schema(
     }
 
 
-@router.get"/pipeline/status/{pipeline_id}")
+@router.get("/pipeline/status/{pipeline_id}")
 async def get_pipeline_status(
     pipeline_id: UUID,
     db: AsyncSession = Depends(get_db),

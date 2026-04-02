@@ -1,12 +1,63 @@
 """Database initialization module"""
 
-from app.db.postgres import engine, Base, get_db
-from app.db.chroma_db import get_chroma_client, get_collection
+from app.db.postgres import (
+    engine,
+    Base,
+    get_db,
+    AsyncSessionLocal,
+    init_db,
+    check_db_connection,
+    close_db,
+    get_db_info,
+    DatabaseSession,
+)
+from app.db.chroma_db import (
+    get_chroma_client,
+    get_collection,
+    get_embedding_function,
+    list_collections,
+    delete_collection,
+    reset_chroma,
+    get_collection_stats,
+    init_collections,
+    check_chroma_health,
+    COLLECTIONS,
+    get_documents_collection,
+    get_requirements_collection,
+    get_mappings_collection,
+    get_code_collection,
+    get_reports_collection,
+    get_knowledge_graph_collection,
+    get_embeddings_collection,
+)
 
 __all__ = [
+    # PostgreSQL
     "engine",
     "Base",
     "get_db",
+    "AsyncSessionLocal",
+    "init_db",
+    "check_db_connection",
+    "close_db",
+    "get_db_info",
+    "DatabaseSession",
+    # ChromaDB
     "get_chroma_client",
     "get_collection",
+    "get_embedding_function",
+    "list_collections",
+    "delete_collection",
+    "reset_chroma",
+    "get_collection_stats",
+    "init_collections",
+    "check_chroma_health",
+    "COLLECTIONS",
+    "get_documents_collection",
+    "get_requirements_collection",
+    "get_mappings_collection",
+    "get_code_collection",
+    "get_reports_collection",
+    "get_knowledge_graph_collection",
+    "get_embeddings_collection",
 ]
